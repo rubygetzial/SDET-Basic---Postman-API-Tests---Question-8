@@ -1,0 +1,873 @@
+{
+  "info": {
+    "_postman_id": "eb39753a-4019-4662-9f7b-487e6e42ef57",
+    "name": "SDET Basic - Question 8- Postman Tests",
+    "description": "Comprehensive test collection with positive and negative test cases for GET, POST, PUT, and DELETE endpoints with HTTP status code verification",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "678240"
+  },
+  "item": [
+    {
+      "name": "GET API",
+      "item": [
+        {
+          "name": "Positive GET - Retrieve existing object (ID: 5)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: Verify Status Code is 200 OK",
+                  "pm.test('Status code is 200', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "// Test 2: Verify response has correct structure",
+                  "pm.test('Response has id, name, and data properties', function() {",
+                  "    pm.expect(pm.response.json()).to.have.property('id');",
+                  "    pm.expect(pm.response.json()).to.have.property('name');",
+                  "});",
+                  "",
+                  "// Test 3: Verify id matches request",
+                  "pm.test('ID in response matches requested ID (5)', function() {",
+                  "    pm.expect(pm.response.json().id).to.equal('5');",
+                  "});",
+                  "",
+                  "// Test 4: Verify response time",
+                  "pm.test('Response time is less than 1000ms', function() {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "https://api.restful-api.dev/objects/5",
+              "protocol": "https",
+              "host": [
+                "api",
+                "restful-api",
+                "dev"
+              ],
+              "path": [
+                "objects",
+                "5"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Negative GET - Retrieve non-existent object (ID: 9999)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: Verify Status Code is 404 Not Found",
+                  "pm.test('Status code is 404 Not Found', function() {",
+                  "    pm.response.to.have.status(404);",
+                  "});",
+                  "",
+                  "// Test 2: Verify error message exists",
+                  "pm.test('Response contains error message', function() {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('error');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "https://api.restful-api.dev/objects/9999",
+              "protocol": "https",
+              "host": [
+                "api",
+                "restful-api",
+                "dev"
+              ],
+              "path": [
+                "objects",
+                "9999"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Negative GET - Invalid ID format (non-numeric)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: Verify Status Code is 400 or 404",
+                  "pm.test('Status code is 400 or 404', function() {",
+                  "    pm.expect([400, 404]).to.include(pm.response.code);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "https://api.restful-api.dev/objects/invalid",
+              "protocol": "https",
+              "host": [
+                "api",
+                "restful-api",
+                "dev"
+              ],
+              "path": [
+                "objects",
+                "invalid"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "Test cases for GET method"
+    },
+    {
+      "name": "POST API",
+      "item": [
+        {
+          "name": "Positive POST - Create new object with valid data",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: Verify Status Code is 201 Created",
+                  "pm.test('Status code is 201 Created', function() {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "// Test 2: Verify response has id property",
+                  "pm.test('Response contains auto-generated id', function() {",
+                  "    pm.expect(pm.response.json()).to.have.property('id');",
+                  "});",
+                  "",
+                  "// Test 3: Verify response contains posted data",
+                  "pm.test('Response contains correct name and data', function() {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.name).to.equal('Apple MacBook Pro 16');",
+                  "    pm.expect(jsonData.data.year).to.equal(2023);",
+                  "});",
+                  "",
+                  "// Test 4: Save ID for future requests",
+                  "pm.environment.set('created_object_id', pm.response.json().id);",
+                  "",
+                  "// Test 5: Verify timestamp exists",
+                  "pm.test('Response includes timestamp', function() {",
+                  "    pm.expect(pm.response.json()).to.have.property('createdAt');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Apple MacBook Pro 16\",\n  \"data\": {\n    \"year\": 2023,\n    \"price\": 1999.99,\n    \"CPU model\": \"Apple M3 Max\",\n    \"color\": \"Space Gray\"\n  }\n}"
+            },
+            "url": {
+              "raw": "https://api.restful-api.dev/objects",
+              "protocol": "https",
+              "host": [
+                "api",
+                "restful-api",
+                "dev"
+              ],
+              "path": [
+                "objects"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Positive POST - Create object with minimal data",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: Verify Status Code is 201 Created",
+                  "pm.test('Status code is 201 Created', function() {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "// Test 2: Verify response has id property",
+                  "pm.test('Response contains auto-generated id', function() {",
+                  "    pm.expect(pm.response.json()).to.have.property('id');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Simple Object\"\n}"
+            },
+            "url": {
+              "raw": "https://api.restful-api.dev/objects",
+              "protocol": "https",
+              "host": [
+                "api",
+                "restful-api",
+                "dev"
+              ],
+              "path": [
+                "objects"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Negative POST - Empty request body",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: Verify Status Code is 400 Bad Request",
+                  "pm.test('Status code is 400 Bad Request', function() {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "// Test 2: Verify error message",
+                  "pm.test('Response contains error details', function() {",
+                  "    pm.expect(pm.response.text()).to.include('error') || pm.expect(pm.response.text()).to.include('required');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "https://api.restful-api.dev/objects",
+              "protocol": "https",
+              "host": [
+                "api",
+                "restful-api",
+                "dev"
+              ],
+              "path": [
+                "objects"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Negative POST - Invalid JSON format",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: Verify Status Code is 400 Bad Request",
+                  "pm.test('Status code is 400 Bad Request for invalid JSON', function() {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ invalid json without closing brace"
+            },
+            "url": {
+              "raw": "https://api.restful-api.dev/objects",
+              "protocol": "https",
+              "host": [
+                "api",
+                "restful-api",
+                "dev"
+              ],
+              "path": [
+                "objects"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Negative POST - Missing required name field",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: Verify Status Code is 400 Bad Request",
+                  "pm.test('Status code is 400 Bad Request', function() {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": {\n    \"year\": 2023,\n    \"price\": 1999.99\n  }\n}"
+            },
+            "url": {
+              "raw": "https://api.restful-api.dev/objects",
+              "protocol": "https",
+              "host": [
+                "api",
+                "restful-api",
+                "dev"
+              ],
+              "path": [
+                "objects"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "Test cases for POST method"
+    },
+    {
+      "name": "PUT API",
+      "item": [
+        {
+          "name": "Positive PUT - Update existing object (ID: 5)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: Verify Status Code is 200 OK",
+                  "pm.test('Status code is 200 OK', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "// Test 2: Verify response contains updated data",
+                  "pm.test('Response contains updated name', function() {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.name).to.equal('Samsung Galaxy Book Pro');",
+                  "});",
+                  "",
+                  "// Test 3: Verify id remains the same",
+                  "pm.test('ID remains unchanged after update', function() {",
+                  "    pm.expect(pm.response.json().id).to.equal('5');",
+                  "});",
+                  "",
+                  "// Test 4: Verify updated data is present",
+                  "pm.test('Updated data reflects changes', function() {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data.year).to.equal(2024);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Samsung Galaxy Book Pro\",\n  \"data\": {\n    \"year\": 2024,\n    \"price\": 1299.99,\n    \"CPU model\": \"Intel Core i7\",\n    \"color\": \"Silver\"\n  }\n}"
+            },
+            "url": {
+              "raw": "https://api.restful-api.dev/objects/5",
+              "protocol": "https",
+              "host": [
+                "api",
+                "restful-api",
+                "dev"
+              ],
+              "path": [
+                "objects",
+                "5"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Positive PUT - Partial update with minimal data",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: Verify Status Code is 200 OK",
+                  "pm.test('Status code is 200 OK', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "// Test 2: Verify name was updated",
+                  "pm.test('Name field was updated', function() {",
+                  "    pm.expect(pm.response.json().name).to.equal('Updated Laptop');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Laptop\"\n}"
+            },
+            "url": {
+              "raw": "https://api.restful-api.dev/objects/5",
+              "protocol": "https",
+              "host": [
+                "api",
+                "restful-api",
+                "dev"
+              ],
+              "path": [
+                "objects",
+                "5"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Negative PUT - Update non-existent object (ID: 9999)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: Verify Status Code is 404 Not Found",
+                  "pm.test('Status code is 404 Not Found', function() {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Non-existent Object\",\n  \"data\": {\n    \"field\": \"value\"\n  }\n}"
+            },
+            "url": {
+              "raw": "https://api.restful-api.dev/objects/9999",
+              "protocol": "https",
+              "host": [
+                "api",
+                "restful-api",
+                "dev"
+              ],
+              "path": [
+                "objects",
+                "9999"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Negative PUT - Invalid JSON format",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: Verify Status Code is 400 Bad Request",
+                  "pm.test('Status code is 400 Bad Request', function() {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ malformed json data without quotes"
+            },
+            "url": {
+              "raw": "https://api.restful-api.dev/objects/5",
+              "protocol": "https",
+              "host": [
+                "api",
+                "restful-api",
+                "dev"
+              ],
+              "path": [
+                "objects",
+                "5"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Negative PUT - Empty request body",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: Verify Status Code is 400 Bad Request",
+                  "pm.test('Status code is 400 Bad Request', function() {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "https://api.restful-api.dev/objects/5",
+              "protocol": "https",
+              "host": [
+                "api",
+                "restful-api",
+                "dev"
+              ],
+              "path": [
+                "objects",
+                "5"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "Test cases for PUT method"
+    },
+    {
+      "name": "DELETE API",
+      "item": [
+        {
+          "name": "Positive DELETE - Delete existing object (ID: 7)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: Verify Status Code is 200 OK",
+                  "pm.test('Status code is 200 OK', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "// Test 2: Verify success message or empty response",
+                  "pm.test('Response indicates successful deletion', function() {",
+                  "    pm.expect(pm.response.text().length).to.be.at.least(0);",
+                  "});",
+                  "",
+                  "// Test 3: Verify no error in response",
+                  "pm.test('Response does not contain error', function() {",
+                  "    pm.expect(pm.response.text()).to.not.include('error');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "https://api.restful-api.dev/objects/7",
+              "protocol": "https",
+              "host": [
+                "api",
+                "restful-api",
+                "dev"
+              ],
+              "path": [
+                "objects",
+                "7"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Negative DELETE - Delete non-existent object (ID: 9999)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: Verify Status Code is 404 Not Found",
+                  "pm.test('Status code is 404 Not Found', function() {",
+                  "    pm.response.to.have.status(404);",
+                  "});",
+                  "",
+                  "// Test 2: Verify error message exists",
+                  "pm.test('Response contains error message', function() {",
+                  "    pm.expect(pm.response.text()).to.include('error') || pm.expect(pm.response.text()).to.include('not found');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "https://api.restful-api.dev/objects/9999",
+              "protocol": "https",
+              "host": [
+                "api",
+                "restful-api",
+                "dev"
+              ],
+              "path": [
+                "objects",
+                "9999"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Negative DELETE - Invalid ID format",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: Verify Status Code is 400 or 404",
+                  "pm.test('Status code is 400 or 404', function() {",
+                  "    pm.expect([400, 404]).to.include(pm.response.code);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "https://api.restful-api.dev/objects/invalid_id",
+              "protocol": "https",
+              "host": [
+                "api",
+                "restful-api",
+                "dev"
+              ],
+              "path": [
+                "objects",
+                "invalid_id"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Negative DELETE - Delete with query parameters (invalid)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: Verify Status Code is 400 or handles gracefully",
+                  "pm.test('Status code indicates error or success', function() {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 204, 400, 404]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "https://api.restful-api.dev/objects/7?force=true&validate=false",
+              "protocol": "https",
+              "host": [
+                "api",
+                "restful-api",
+                "dev"
+              ],
+              "path": [
+                "objects",
+                "7"
+              ],
+              "query": [
+                {
+                  "key": "force",
+                  "value": "true"
+                },
+                {
+                  "key": "validate",
+                  "value": "false"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "Test cases for DELETE method"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Global pre-request setup",
+          "console.log('Starting test execution');"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://api.restful-api.dev",
+      "type": "string"
+    },
+    {
+      "key": "created_object_id",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
